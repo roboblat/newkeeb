@@ -13,6 +13,7 @@
  * and set  input-processors = <&pointer_accel>;  on right_pointer_listener.
  */
 
+#include "newkeeb-layouts.dtsi"
 #include "newkeeb.dtsi"
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <input/processors.dtsi>

@@ -8,6 +8,7 @@
 / {
     newkeeb_physical_layout: newkeeb_physical_layout {
         compatible = "zmk,physical-layout";
+        status = "okay";
         display-name = "newKeeb";
         transform = <&default_transform>;
         keys
