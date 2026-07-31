@@ -1,0 +1,9 @@
+file_format: "1"
+id: newkeeb
+name: newKeeb
+type: shield
+url: ""
+requires: [xiao]
+features:
+  - keys
+  - pointer
