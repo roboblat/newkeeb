@@ -21,6 +21,7 @@
     /* The central has no keys of its own -> mock kscan. */
     chosen {
         zmk,kscan = &mock_kscan;
+        zmk,physical-layout = &newkeeb_physical_layout;
     };
 
     mock_kscan: mock_kscan_0 {

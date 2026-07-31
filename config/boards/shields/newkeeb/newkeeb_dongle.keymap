@@ -17,6 +17,7 @@
 / {
     keymap {
         compatible = "zmk,keymap";
+        physical-layout = &newkeeb_physical_layout;
 
         base_layer {
             display-name = "Base";

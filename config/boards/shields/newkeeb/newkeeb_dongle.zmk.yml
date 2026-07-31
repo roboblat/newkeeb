@@ -1,0 +1,9 @@
+file_format: "1"
+id: newkeeb_dongle
+name: newKeeb Dongle
+type: shield
+url: ""
+requires: [xiao]
+features:
+  - keys
+  - pointer
