@@ -5,8 +5,9 @@
 
 #include "newkeeb_half.dtsi"
 
-/* Forward this half's pad to the scroll proxy. */
+/* Forward this half's pad to the scroll proxy (enable + bind the local pad). */
 &left_input {
+    status = "okay";
     device = <&trackpad>;
 };
 

@@ -53,3 +53,12 @@
         device = <&right_input>;
     };
 };
+
+/* Enable both receive-side proxies on the central (device-less is fine here). */
+&left_input {
+    status = "okay";
+};
+
+&right_input {
+    status = "okay";
+};

@@ -43,13 +43,20 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4)    RC(3,5) RC(3,6) RC(3,7) RC(3,8) RC(3,
         #address-cells = <1>;
         #size-cells = <0>;
 
+        /*
+         * Disabled by default. A peripheral must give any ENABLED input-split a
+         * `device`, so each half enables only its own (with device) in its
+         * overlay; the dongle enables both as device-less receive proxies.
+         */
         left_input: left_input@0 {
             compatible = "zmk,input-split";
             reg = <0>;
+            status = "disabled";
         };
         right_input: right_input@1 {
             compatible = "zmk,input-split";
             reg = <1>;
+            status = "disabled";
         };
     };
 };

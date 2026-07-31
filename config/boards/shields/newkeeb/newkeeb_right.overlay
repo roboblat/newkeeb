@@ -26,8 +26,9 @@
         ;
 };
 
-/* Forward this half's pad to the pointer proxy. */
+/* Forward this half's pad to the pointer proxy (enable + bind the local pad). */
 &right_input {
+    status = "okay";
     device = <&trackpad>;
 };
 
