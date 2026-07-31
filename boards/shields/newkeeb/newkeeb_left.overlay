@@ -1,0 +1,23 @@
+/*
+ * LEFT half = split PERIPHERAL (forced ROLE_CENTRAL=n in build.yaml).
+ * Local trackpad -> SCROLL, forwarded to the dongle. Keeps col-offset 0 (cols 0-4).
+ */
+
+#include "newkeeb_half.dtsi"
+
+/* Forward this half's pad to the scroll proxy. */
+&left_input {
+    device = <&trackpad>;
+};
+
+/*
+ * Axis orientation for the LEFT pad (mirror of the right). Uncomment ONE case
+ * once settled on the bench. See the block in newkeeb_half.dtsi.
+ */
+/*
+&trackpad {
+    // swap-xy;
+    // invert-x;
+    // invert-y;
+};
+*/

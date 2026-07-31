@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+
+config SHIELD_NEWKEEB_LEFT
+	def_bool $(shields_list_contains,newkeeb_left)
+
+config SHIELD_NEWKEEB_RIGHT
+	def_bool $(shields_list_contains,newkeeb_right)
+
+config SHIELD_NEWKEEB_DONGLE
+	def_bool $(shields_list_contains,newkeeb_dongle)

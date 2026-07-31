@@ -1,0 +1,53 @@
+/*
+ * DONGLE = split CENTRAL, keyless, USB. Runs the keymap and both trackpad
+ * listeners: LEFT pad -> scroll, RIGHT pad -> pointer (with acceleration).
+ * No matrix, no trackpad, no battery - it's a bare XIAO on USB.
+ */
+
+#include "newkeeb.dtsi"
+
+/* ---- STEP 4 (acceleration): uncomment to bring in the default &pointer_accel ---- */
+// #include <behaviors/input_gestures_accel.dtsi>
+
+/ {
+    /* The central has no keys of its own -> mock kscan. */
+    chosen {
+        zmk,kscan = &mock_kscan;
+    };
+
+    mock_kscan: mock_kscan_0 {
+        compatible = "zmk,kscan-mock";
+        columns = <0>;
+        rows = <0>;
+        events = <0>;
+    };
+};
+
+/*
+ * ---- STEP 4 (acceleration): uncomment this whole block when ready ----
+ * Velocity-based, on the POINTER listener only. Factors in thousandths.
+ */
+// &pointer_accel {
+//     #input-processor-cells = <0>;
+//     input-type = <INPUT_EV_REL>;
+//     min-factor = <800>;
+//     max-factor = <3000>;
+//     speed-threshold = <1200>;
+//     speed-max = <6000>;
+//     acceleration-exponent = <2>;
+//     track-remainders;
+// };
+
+/* LEFT pad -> scroll. */
+&left_scroll_listener {
+    status = "okay";
+};
+
+/*
+ * RIGHT pad -> pointer. PLAIN POINTER for now (no processors).
+ * STEP 4: change to  input-processors = <&pointer_accel>;
+ */
+&right_pointer_listener {
+    status = "okay";
+    input-processors = <>;
+};

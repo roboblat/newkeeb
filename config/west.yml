@@ -1,0 +1,18 @@
+manifest:
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    - name: oleksandrmaslov
+      url-base: https://github.com/oleksandrmaslov
+  projects:
+    - name: zmk
+      remote: zmkfirmware
+      revision: main
+      import: app/west.yml
+    # Pointer acceleration (out-of-tree). Added LAST in the build order - do not
+    # enable it until the plain pointer chain is verified.
+    - name: zmk-pointing-acceleration
+      remote: oleksandrmaslov
+      revision: main
+  self:
+    path: config

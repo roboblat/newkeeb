@@ -1,0 +1,17 @@
+include:
+  # Dongle = central (USB). Flash this one to the third XIAO.
+  - board: xiao_ble//zmk
+    shield: newkeeb_dongle
+
+  # Halves = peripherals. Forced to peripheral role via cmake-args.
+  - board: xiao_ble//zmk
+    shield: newkeeb_left
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+
+  - board: xiao_ble//zmk
+    shield: newkeeb_right
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+
+  # Flash this to any part to wipe BLE bonds when re-pairing the 3 devices.
+  - board: xiao_ble//zmk
+    shield: settings_reset

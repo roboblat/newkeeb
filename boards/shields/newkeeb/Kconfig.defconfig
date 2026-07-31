@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: MIT
+
+if SHIELD_NEWKEEB_LEFT
+
+config ZMK_KEYBOARD_NAME
+	default "newKeeb L"
+
+config ZMK_SPLIT
+	default y
+
+endif # SHIELD_NEWKEEB_LEFT
+
+if SHIELD_NEWKEEB_RIGHT
+
+config ZMK_KEYBOARD_NAME
+	default "newKeeb R"
+
+config ZMK_SPLIT
+	default y
+
+endif # SHIELD_NEWKEEB_RIGHT
+
+if SHIELD_NEWKEEB_DONGLE
+
+config ZMK_KEYBOARD_NAME
+	default "newKeeb"
+
+config ZMK_SPLIT
+	default y
+
+# The dongle is the central.
+config ZMK_SPLIT_ROLE_CENTRAL
+	default y
+
+# Two peripherals connect to it: the left and right halves.
+config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
+	default 2
+
+endif # SHIELD_NEWKEEB_DONGLE

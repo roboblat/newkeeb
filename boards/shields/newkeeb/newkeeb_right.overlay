@@ -1,0 +1,44 @@
+/*
+ * RIGHT half = split PERIPHERAL (forced ROLE_CENTRAL=n in build.yaml).
+ * Local trackpad -> POINTER, forwarded to the dongle. Occupies cols 5-9.
+ */
+
+#include "newkeeb_half.dtsi"
+
+/* Right half occupies columns 5-9 of the combined transform. */
+&default_transform {
+    col-offset = <5>;
+};
+
+/*
+ * Wire BOTH halves identically (mirror images): on each hand the OUTER column
+ * goes to the D0 bus ... the INNER column (by the gap) goes to D9 / P1.14.
+ * The right hand is a left-right mirror, so its column scan order is reversed
+ * here and the keymap still reads left-to-right. Rows are NOT reversed.
+ */
+&kscan0 {
+    col-gpios
+        = <&gpio1 14 GPIO_ACTIVE_HIGH>   /* inner (by gap)  D9  P1.14  -> logical col5 (Y) */
+        , <&gpio0 29 GPIO_ACTIVE_HIGH>   /*                 D3  P0.29  -> logical col6 (U) */
+        , <&gpio0 28 GPIO_ACTIVE_HIGH>   /*                 D2  P0.28  -> logical col7 (I) */
+        , <&gpio0  3 GPIO_ACTIVE_HIGH>   /*                 D1  P0.03  -> logical col8 (O) */
+        , <&gpio0  2 GPIO_ACTIVE_HIGH>   /* outer (far R)   D0  P0.02  -> logical col9 (P) */
+        ;
+};
+
+/* Forward this half's pad to the pointer proxy. */
+&right_input {
+    device = <&trackpad>;
+};
+
+/*
+ * Axis orientation for the RIGHT pad (mirror of the left). Uncomment ONE case
+ * once settled on the bench. See the block in newkeeb_half.dtsi.
+ */
+/*
+&trackpad {
+    // swap-xy;
+    // invert-x;
+    // invert-y;
+};
+*/

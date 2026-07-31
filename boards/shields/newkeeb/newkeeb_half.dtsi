@@ -1,0 +1,91 @@
+/*
+ * newKeeb - shared by the two keyboard HALVES (peripherals) only.
+ * Matrix (kscan) + I2C trackpad. The dongle does NOT include this file.
+ *
+ * Both halves are wired IDENTICALLY. The right overlay reverses its column scan
+ * order and adds col-offset, so you wire both hands the same way.
+ */
+
+#include "newkeeb.dtsi"
+#include <dt-bindings/zmk/pointing.h>
+
+/ {
+    chosen {
+        zmk,kscan = &kscan0;
+    };
+
+    /*
+     * diode-direction = "col2row": cols driven, rows read (pull-down).
+     * => diode band (cathode) points toward the ROW. Keep all diodes uniform.
+     * row3 is the single back-pad signal (P0.09 / D14 / NFC1).
+     */
+    kscan0: kscan {
+        compatible = "zmk,kscan-gpio-matrix";
+        wakeup-source;
+        diode-direction = "col2row";
+
+        row-gpios
+            = <&gpio1 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* row0  D6  P1.11 */
+            , <&gpio1 12 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* row1  D7  P1.12 */
+            , <&gpio1 13 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* row2  D8  P1.13 */
+            , <&gpio0  9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* row3  D14 P0.09  <-- back pad */
+            ;
+
+        /* Outer column -> D0 ... inner column -> D9. Right overlay reverses this. */
+        col-gpios
+            = <&gpio0  2 GPIO_ACTIVE_HIGH>   /* outer  D0  P0.02 */
+            , <&gpio0  3 GPIO_ACTIVE_HIGH>   /*        D1  P0.03 */
+            , <&gpio0 28 GPIO_ACTIVE_HIGH>   /*        D2  P0.28 */
+            , <&gpio0 29 GPIO_ACTIVE_HIGH>   /*        D3  P0.29 */
+            , <&gpio1 14 GPIO_ACTIVE_HIGH>   /* inner  D9  P1.14 */
+            ;
+    };
+};
+
+/* NFC pins P0.09/P0.10 as GPIO (replaces the removed CONFIG_NFCT_PINS_AS_GPIOS). */
+&uicr {
+    nfct-pins-as-gpios;
+};
+
+&pinctrl {
+    i2c0_default: i2c0_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 4)>, <NRF_PSEL(TWIM_SCL, 0, 5)>;
+        };
+    };
+    i2c0_sleep: i2c0_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 4)>, <NRF_PSEL(TWIM_SCL, 0, 5)>;
+            low-power-enable;
+        };
+    };
+};
+
+&i2c0 {
+    status = "okay";
+    compatible = "nordic,nrf-twim";
+    clock-frequency = <400000>;              /* drop to 100000 if the FPC run is flaky */
+    pinctrl-0 = <&i2c0_default>;
+    pinctrl-1 = <&i2c0_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    trackpad: trackpad@2a {
+        compatible = "cirque,pinnacle";
+        reg = <0x2a>;
+        status = "okay";
+        data-ready-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;   /* DR  D10 P1.15 */
+        sleep-mode-enable;          /* ~1.7 mA -> ~40 uA idle. Not optional with two pads. */
+        sensitivity = "2x";
+        data-mode = "relative";     /* REL_X/REL_Y feeds the pointer + scroll mapper */
+
+        /*
+         * ---- AXIS ORIENTATION: TODO, settle on the bench (per half; mirrored) ----
+         * Set per-half in each overlay, NOT here. Four rotations:
+         *     as mounted:      (no properties)
+         *     rotate 90 CW:    swap-xy; invert-x;
+         *     rotate 180:      invert-x; invert-y;
+         *     rotate 90 CCW:   swap-xy; invert-y;
+         * Ignore the INVX/INVY/SWP jumpers on the pad PCB - do it here.
+         */
+    };
+};
