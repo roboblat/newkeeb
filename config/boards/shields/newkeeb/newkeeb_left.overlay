@@ -27,13 +27,16 @@
 };
 
 /*
- * Axis orientation for the LEFT pad (mirror of the right). Uncomment ONE case
- * once settled on the bench. See the block in newkeeb_half.dtsi.
+ * Axis orientation for the LEFT pad (SCROLL).
+ * If rotated on the bench, set matching rotation:
+ *   90° CW  (ribbon L): swap-xy; invert-x;
+ *   90° CCW (ribbon R): swap-xy; invert-y;
+ *   180°    (ribbon U): invert-x; invert-y;
+ *   0°      (ribbon D): (no properties)
  */
 /*
 &trackpad {
     // swap-xy;
     // invert-x;
-    // invert-y;
 };
 */
