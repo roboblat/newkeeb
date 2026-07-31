@@ -21,7 +21,7 @@ config/
   newkeeb_dongle.conf     central: pointing, accel (staged off)
   newkeeb_left.conf       peripheral
   newkeeb_right.conf      peripheral
-boards/shields/newkeeb/
+config/boards/shields/newkeeb/   (custom shields MUST live under config/boards)
   Kconfig.shield          SHIELD_NEWKEEB_LEFT / _RIGHT / _DONGLE
   Kconfig.defconfig       roles, peripheral count (=2), keyboard names
   newkeeb.dtsi            shared by ALL parts: transform + split-input proxies
