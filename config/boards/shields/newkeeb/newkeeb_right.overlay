@@ -34,14 +34,9 @@
 
 /*
  * Axis orientation for the RIGHT pad.
- * Default set for 90° CW mounting (ribbon pointing Left): swap-xy; invert-x;
- * If mounted differently, swap properties:
- *   90° CW  (ribbon L): swap-xy; invert-x;
- *   90° CCW (ribbon R): swap-xy; invert-y;
- *   180°    (ribbon U): invert-x; invert-y;
- *   0°      (ribbon D): (no properties)
+ * Set to swap-xy; invert-y; so Up/Down and Left/Right match screen direction.
  */
 &trackpad {
     swap-xy;
-    invert-x;
+    invert-y;
 };

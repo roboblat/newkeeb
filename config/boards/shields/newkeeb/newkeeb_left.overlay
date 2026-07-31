@@ -28,15 +28,9 @@
 
 /*
  * Axis orientation for the LEFT pad (SCROLL).
- * If rotated on the bench, set matching rotation:
- *   90° CW  (ribbon L): swap-xy; invert-x;
- *   90° CCW (ribbon R): swap-xy; invert-y;
- *   180°    (ribbon U): invert-x; invert-y;
- *   0°      (ribbon D): (no properties)
+ * Enables vertical scroll on Up/Down swipe and horizontal scroll on Left/Right swipe.
  */
-/*
 &trackpad {
-    // swap-xy;
-    // invert-x;
+    swap-xy;
+    invert-y;
 };
-*/
