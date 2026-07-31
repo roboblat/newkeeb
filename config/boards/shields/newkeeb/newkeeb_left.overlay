@@ -5,6 +5,21 @@
 
 #include "newkeeb_half.dtsi"
 
+/*
+ * Column order fix: the left half was wired with its columns in the opposite
+ * order from what the shared kscan assumes, so keys came out mirrored. Reverse
+ * the left's column scan order here (same reversed order the right uses).
+ */
+&kscan0 {
+    col-gpios
+        = <&gpio1 14 GPIO_ACTIVE_HIGH>   /* D9  P1.14 -> logical col0 */
+        , <&gpio0 29 GPIO_ACTIVE_HIGH>   /* D3  P0.29 -> logical col1 */
+        , <&gpio0 28 GPIO_ACTIVE_HIGH>   /* D2  P0.28 -> logical col2 */
+        , <&gpio0  3 GPIO_ACTIVE_HIGH>   /* D1  P0.03 -> logical col3 */
+        , <&gpio0  2 GPIO_ACTIVE_HIGH>   /* D0  P0.02 -> logical col4 */
+        ;
+};
+
 /* Forward this half's pad to the scroll proxy (enable + bind the local pad). */
 &left_input {
     status = "okay";
