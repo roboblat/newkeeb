@@ -47,27 +47,26 @@
     nfct-pins-as-gpios;
 };
 
-&pinctrl {
-    i2c0_default: i2c0_default {
-        group1 {
-            psels = <NRF_PSEL(TWIM_SDA, 0, 4)>, <NRF_PSEL(TWIM_SCL, 0, 5)>;
-        };
-    };
-    i2c0_sleep: i2c0_sleep {
-        group1 {
-            psels = <NRF_PSEL(TWIM_SDA, 0, 4)>, <NRF_PSEL(TWIM_SCL, 0, 5)>;
-            low-power-enable;
-        };
-    };
+/*
+ * The XIAO board enables uart0 on P1.11/P1.12 and spi2 on P1.13/P1.14/P1.15 -
+ * i.e. all of D6, D7, D8, D9, D10. We need those as GPIO (rows/cols + trackpad
+ * DR), so disable both. The onboard flash is on qspi, so this is safe.
+ */
+&uart0 {
+    status = "disabled";
 };
 
-&i2c0 {
-    status = "okay";
-    compatible = "nordic,nrf-twim";
+&spi2 {
+    status = "disabled";
+};
+
+/*
+ * Trackpad on the board's default I2C = i2c1 (P0.04 SDA / P0.05 SCL, already
+ * enabled with pinctrl by the board). NOTE: the XIAO's D4/D5 I2C is peripheral
+ * instance 1, not 0 - using i2c0 collides with i2c1 on the same pins.
+ */
+&i2c1 {
     clock-frequency = <400000>;              /* drop to 100000 if the FPC run is flaky */
-    pinctrl-0 = <&i2c0_default>;
-    pinctrl-1 = <&i2c0_sleep>;
-    pinctrl-names = "default", "sleep";
 
     trackpad: trackpad@2a {
         compatible = "cirque,pinnacle";
