@@ -1,19 +1,19 @@
 /*
  * newKeeb - shared by ALL THREE parts (dongle + left + right).
  *
- * Contains only what every part must agree on: the matrix transform and the
- * split-input plumbing. (ZMK requires the transform to exist identically on
- * every part of a split.) Per-half hardware (matrix + i2c + trackpad) lives in
- * newkeeb_half.dtsi; the dongle's mock kscan + listeners live in the dongle overlay.
+ * Only what every part must agree on: the matrix transform (ZMK requires it
+ * identical on all parts) and the split-input proxies. Everything else is
+ * part-specific:
+ *   - matrix + i2c + trackpad                     -> newkeeb_half.dtsi (halves)
+ *   - mock kscan + input processors + listeners   -> newkeeb_dongle.overlay
  *
- *   DONGLE = central, keyless, USB. Runs the keymap + both trackpad listeners.
- *   LEFT   = peripheral. Matrix + trackpad -> SCROLL  (forwarded to the dongle).
- *   RIGHT  = peripheral. Matrix + trackpad -> POINTER (forwarded to the dongle).
+ * The input processors (scroll mapper etc.) live ONLY on the dongle: ZMK's
+ * processors.dtsi references keymap behaviors (&none) that exist only where
+ * there is a keymap - i.e. the central. Pulling it onto the keyless peripherals
+ * is what caused the "undefined node label 'none'" error.
  */
 
 #include <dt-bindings/zmk/matrix_transform.h>
-#include <zephyr/dt-bindings/input/input-event-codes.h>
-#include <input/processors.dtsi>
 
 / {
     chosen {
@@ -36,7 +36,7 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4)    RC(3,5) RC(3,6) RC(3,7) RC(3,8) RC(3,
 
     /*
      * Split input proxies. Each half binds its local trackpad to one of these in
-     * its overlay; the dongle enables the matching listener. On the dongle these
+     * its overlay; the dongle attaches a listener to each. On the dongle these
      * stay device-less (they are the remote proxies).
      */
     split_inputs {
@@ -51,28 +51,5 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4)    RC(3,5) RC(3,6) RC(3,7) RC(3,8) RC(3,
             compatible = "zmk,input-split";
             reg = <1>;
         };
-    };
-
-    /* Scroll scaler: divide wheel deltas into 1/64..1/128 and keep remainders. */
-    scroll_scaler: scroll_scaler {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;
-        type = <INPUT_EV_REL>;
-        codes = <INPUT_REL_WHEEL INPUT_REL_HWHEEL>;
-        track-remainders;
-    };
-
-    /* Both listeners run on the DONGLE. Enabled in newkeeb_dongle.overlay. */
-    left_scroll_listener: left_scroll_listener {
-        compatible = "zmk,input-listener";
-        status = "disabled";
-        device = <&left_input>;
-        input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 96>;
-    };
-    right_pointer_listener: right_pointer_listener {
-        compatible = "zmk,input-listener";
-        status = "disabled";
-        device = <&right_input>;
-        /* pointer acceleration is attached on the dongle */
     };
 };

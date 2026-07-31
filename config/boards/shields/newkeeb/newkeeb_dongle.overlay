@@ -1,19 +1,21 @@
 /*
- * DONGLE = split CENTRAL, keyless, USB. Runs the keymap and both trackpad
- * listeners: LEFT pad -> scroll, RIGHT pad -> pointer.
+ * DONGLE = split CENTRAL, keyless, USB. Runs the keymap, the input processors,
+ * and both trackpad listeners: LEFT pad -> scroll, RIGHT pad -> pointer.
  * No matrix, no trackpad, no battery - it's a bare XIAO on USB.
  *
  * NOTE: pointer acceleration is temporarily disabled - the out-of-tree accel
  * module doesn't build against ZMK main yet (see config/west.yml). This is a
- * plain pointer. To re-add: restore the module in west.yml, then add back:
+ * plain pointer. To re-add: restore the module in west.yml, then add:
  *     #include <behaviors/input_gestures_accel.dtsi>
  *     &pointer_accel { #input-processor-cells = <0>; input-type = <INPUT_EV_REL>;
  *         min-factor = <800>; max-factor = <3000>; speed-threshold = <1200>;
  *         speed-max = <6000>; acceleration-exponent = <2>; track-remainders; };
- * and set  input-processors = <&pointer_accel>;  on the pointer listener below.
+ * and set  input-processors = <&pointer_accel>;  on right_pointer_listener.
  */
 
 #include "newkeeb.dtsi"
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <input/processors.dtsi>
 
 / {
     /* The central has no keys of its own -> mock kscan. */
@@ -27,14 +29,27 @@
         rows = <0>;
         events = <0>;
     };
-};
 
-/* LEFT pad -> scroll. */
-&left_scroll_listener {
-    status = "okay";
-};
+    /* Scroll scaler: divide wheel deltas into ~1/64..1/128 and keep remainders
+     * so slow drags aren't truncated. Tune the divisor (used below). */
+    scroll_scaler: scroll_scaler {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
+        type = <INPUT_EV_REL>;
+        codes = <INPUT_REL_WHEEL INPUT_REL_HWHEEL>;
+        track-remainders;
+    };
 
-/* RIGHT pad -> pointer (plain, no acceleration for now). */
-&right_pointer_listener {
-    status = "okay";
+    /* LEFT pad -> scroll. */
+    left_scroll_listener: left_scroll_listener {
+        compatible = "zmk,input-listener";
+        device = <&left_input>;
+        input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 96>;
+    };
+
+    /* RIGHT pad -> pointer (plain; acceleration is a follow-up, see header). */
+    right_pointer_listener: right_pointer_listener {
+        compatible = "zmk,input-listener";
+        device = <&right_input>;
+    };
 };
