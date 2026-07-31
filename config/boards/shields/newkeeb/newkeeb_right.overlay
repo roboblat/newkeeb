@@ -33,13 +33,11 @@
 };
 
 /*
- * Axis orientation for the RIGHT pad (mirror of the left). Uncomment ONE case
- * once settled on the bench. See the block in newkeeb_half.dtsi.
+ * Axis orientation for the RIGHT pad.
+ * "right is up / up is right" = X and Y swapped -> swap-xy.
+ * If after this a direction is reversed (e.g. right goes left, or up goes down),
+ * add invert-x and/or invert-y here too.
  */
-/*
 &trackpad {
-    // swap-xy;
-    // invert-x;
-    // invert-y;
+    swap-xy;
 };
-*/

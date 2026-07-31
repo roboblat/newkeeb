@@ -30,8 +30,10 @@
         events = <0>;
     };
 
-    /* Scroll scaler: divide wheel deltas into ~1/64..1/128 and keep remainders
-     * so slow drags aren't truncated. Tune the divisor (used below). */
+    /* Scroll scaler: divides wheel deltas, keeps remainders so slow drags aren't
+     * truncated. Divisor is the 2nd arg where it's used below.
+     * Higher divisor = slower scroll. ÷96 was so slow it looked dead; ÷8 is a
+     * usable starting point - raise it toward 16/32 if you want it slower. */
     scroll_scaler: scroll_scaler {
         compatible = "zmk,input-processor-scaler";
         #input-processor-cells = <2>;
@@ -44,7 +46,7 @@
     left_scroll_listener: left_scroll_listener {
         compatible = "zmk,input-listener";
         device = <&left_input>;
-        input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 96>;
+        input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
     };
 
     /* RIGHT pad -> pointer (plain; acceleration is a follow-up, see header). */
