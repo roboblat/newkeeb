@@ -15,3 +15,7 @@ include:
   # Flash this to any part to wipe BLE bonds when re-pairing the 3 devices.
   - board: xiao_ble//zmk
     shield: settings_reset
+
+  # DIAGNOSTIC ONLY: standalone single-half USB keyboard+mouse to test the pad.
+  - board: xiao_ble//zmk
+    shield: newkeeb_test

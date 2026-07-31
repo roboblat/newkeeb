@@ -1,0 +1,24 @@
+/*
+ * DIAGNOSTIC ONLY - not part of the real keyboard.
+ *
+ * Runs a SINGLE half as a standalone USB keyboard + mouse (no split, no dongle).
+ * Flash this to either half, plug it into USB:
+ *   - cursor moves when you touch the pad  -> pad + wiring + driver all GOOD,
+ *     so the real problem is the split forwarding (firmware, my side).
+ *   - cursor dead                          -> hardware / I2C (pad not answering).
+ *
+ * USB logging is on (see newkeeb_test.conf) so the serial console also shows
+ * whether the Cirque pad is detected on I2C.
+ */
+
+#include "newkeeb_half.dtsi"
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <input/processors.dtsi>
+
+/ {
+    /* Local pointer listener - the pad drives the cursor directly over USB. */
+    tp_listener: tp_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackpad>;
+    };
+};

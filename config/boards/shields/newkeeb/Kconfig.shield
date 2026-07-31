@@ -8,3 +8,7 @@ config SHIELD_NEWKEEB_RIGHT
 
 config SHIELD_NEWKEEB_DONGLE
 	def_bool $(shields_list_contains,newkeeb_dongle)
+
+# Diagnostic-only standalone single-half build.
+config SHIELD_NEWKEEB_TEST
+	def_bool $(shields_list_contains,newkeeb_test)
