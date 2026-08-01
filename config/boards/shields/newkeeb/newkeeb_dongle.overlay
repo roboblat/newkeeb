@@ -38,13 +38,10 @@
         track-remainders;
     };
 
-    /* Converts relative scroll wheel movement to Volume Up / Down keypresses */
-    volume_behaviors: volume_behaviors {
-        compatible = "zmk,input-processor-behaviors";
+    /* Converts relative scroll wheel movement to Volume Up / Down HID consumer reports */
+    volume_processor: volume_processor {
+        compatible = "zmk,input-processor-volume";
         #input-processor-cells = <0>;
-        type = <INPUT_EV_REL>;
-        codes = <INPUT_REL_WHEEL>;
-        bindings = <&kp C_VOL_UP &kp C_VOL_DN>;
     };
 
     /* LEFT pad -> scroll.
@@ -57,7 +54,7 @@
 
         nav_volume {
             layers = <1>; /* NAV layer */
-            input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 16 &volume_behaviors>;
+            input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 16 &volume_processor>;
         };
     };
 

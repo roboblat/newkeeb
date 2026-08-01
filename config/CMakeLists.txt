@@ -3,3 +3,6 @@
 # global include path so the module builds against current ZMK / Zephyr 4.1.
 # config/ and zmk/ are siblings in the west workspace, so ../zmk resolves it.
 zephyr_include_directories(${CMAKE_CURRENT_LIST_DIR}/../zmk/app/include)
+zephyr_library_sources_if_kconfig(src/input_processor_volume.c)
+zephyr_library_sources(src/input_processor_volume.c)
+
