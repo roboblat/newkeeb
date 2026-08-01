@@ -2,7 +2,7 @@ include:
   # Dongle = central (USB). Flash this one to the third XIAO.
   # studio-rpc-usb-uart snippet = the USB transport ZMK Studio connects over.
   - board: xiao_ble//zmk
-    shield: newkeeb_dongle
+    shield: newkeeb_dongle dongle_screen
     snippet: studio-rpc-usb-uart
 
   # Halves = peripherals. Forced to peripheral role via cmake-args.

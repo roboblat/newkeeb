@@ -14,14 +14,16 @@ static int ip_vol_handle_event(const struct device *dev, struct input_event *eve
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
-    if (event->code == INPUT_REL_WHEEL && event->value != 0) {
-        uint32_t keycode = (event->value > 0) ? C_VOL_UP : C_VOL_DN;
+    if (event->code == INPUT_REL_Y && event->value != 0) {
+        /* Raw Y movement: negative = swipe up = Vol Up, positive = swipe down = Vol Down */
+        uint32_t keycode = (event->value < 0) ? C_VOL_UP : C_VOL_DN;
         int64_t now = k_uptime_get();
 
         raise_zmk_keycode_state_changed_from_encoded(keycode, true, now);
         raise_zmk_keycode_state_changed_from_encoded(keycode, false, now);
     }
 
+    /* Stop ALL relative events (REL_X, REL_Y, REL_WHEEL, etc.) on NAV layer so ZERO scroll leaks */
     return ZMK_INPUT_PROC_STOP;
 }
 

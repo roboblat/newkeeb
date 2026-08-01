@@ -45,16 +45,16 @@
     };
 
     /* LEFT pad -> scroll.
-     * Base layer: mouse scroll wheel.
-     * NAV layer (layer 1): volume control (up/down swipe = Vol Up / Vol Down). */
+     * Base layer: mouse scroll wheel (1 16 scaler for smoother/slower scrolling).
+     * NAV layer (layer 1): volume control (up/down swipe = Vol Up / Vol Down, zero scroll leakage). */
     left_scroll_listener: left_scroll_listener {
         compatible = "zmk,input-listener";
         device = <&left_input>;
-        input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
+        input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 16>;
 
         nav_volume {
             layers = <1>; /* NAV layer */
-            input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 16 &volume_processor>;
+            input-processors = <&volume_processor>;
         };
     };
 
