@@ -10,11 +10,11 @@
 static int ip_vol_handle_event(const struct device *dev, struct input_event *event,
                               uint32_t param1, uint32_t param2,
                               struct zmk_input_processor_state *state) {
-    if (event->type != INPUT_EV_REL || event->code != INPUT_REL_WHEEL) {
-        return 0;
+    if (event->type != INPUT_EV_REL) {
+        return ZMK_INPUT_PROC_CONTINUE;
     }
 
-    if (event->value != 0) {
+    if (event->code == INPUT_REL_WHEEL && event->value != 0) {
         uint32_t keycode = (event->value > 0) ? C_VOL_UP : C_VOL_DN;
         int64_t now = k_uptime_get();
 
@@ -22,7 +22,7 @@ static int ip_vol_handle_event(const struct device *dev, struct input_event *eve
         raise_zmk_keycode_state_changed_from_encoded(keycode, false, now);
     }
 
-    return 1;
+    return ZMK_INPUT_PROC_STOP;
 }
 
 static const struct zmk_input_processor_driver_api vol_api = {
