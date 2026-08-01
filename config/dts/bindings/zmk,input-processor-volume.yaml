@@ -7,3 +7,6 @@ properties:
   "#input-processor-cells":
     type: int
     const: 0
+  track-remainders:
+    type: boolean
+    description: Track remainders for sub-integer event values
