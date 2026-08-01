@@ -58,16 +58,24 @@
     };
 };
 
-/* Non-linear velocity acceleration curve for 40mm Cirque trackpads:
- * - 0.8x scaling at slow finger speeds for precise micro-targeting
- * - 3.0x scaling at fast finger speeds for quick sweeps across display */
+/*
+ * Non-linear velocity acceleration for the Cirque pointer. Factors are x1000
+ * (1000 = 1.0x). Tuning knobs:
+ *   min-factor        - gain at/below speed-threshold (1000 = normal, not slower)
+ *   max-factor        - gain at/above speed-max (3000 = 3.0x on fast flicks)
+ *   speed-threshold   - velocity where accel starts ramping (lower = engages sooner)
+ *   speed-max         - velocity where max-factor is reached (lower = ramps faster)
+ *   acceleration-exponent - 1 linear, 2 quadratic ramp
+ * These engage the ramp much earlier than the module defaults (which top out so
+ * high you never feel them). Raise the thresholds if it feels twitchy.
+ */
 &pointer_accel {
     input-type = <INPUT_EV_REL>;
     track-remainders;
-    min-factor = <800>;
+    min-factor = <1000>;
     max-factor = <3000>;
-    speed-threshold = <1200>;
-    speed-max = <6000>;
+    speed-threshold = <300>;
+    speed-max = <2000>;
     acceleration-exponent = <2>;
 };
 
