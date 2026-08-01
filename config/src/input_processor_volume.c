@@ -2,8 +2,10 @@
 #include <zephyr/device.h>
 #include <drivers/input_processor.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
-#include <zmk/hid.h>
-#include <zmk/endpoints.h>
+#include <dt-bindings/zmk/hid_usage_pages.h>
+#include <dt-bindings/zmk/keys.h>
+#include <zmk/event_manager.h>
+#include <zmk/events/keycode_state_changed.h>
 
 #define DT_DRV_COMPAT zmk_input_processor_volume
 
@@ -14,16 +16,22 @@ static int ip_vol_handle_event(const struct device *dev, struct input_event *eve
         return 0;
     }
 
-    if (event->value > 0) {
-        zmk_hid_consumer_press(HID_USAGE_CONSUMER_VOLUME_INCREMENT);
-        zmk_endpoints_send_report(ZMK_HID_REPORT_TYPE_CONSUMER);
-        zmk_hid_consumer_release(HID_USAGE_CONSUMER_VOLUME_INCREMENT);
-        zmk_endpoints_send_report(ZMK_HID_REPORT_TYPE_CONSUMER);
-    } else if (event->value < 0) {
-        zmk_hid_consumer_press(HID_USAGE_CONSUMER_VOLUME_DECREMENT);
-        zmk_endpoints_send_report(ZMK_HID_REPORT_TYPE_CONSUMER);
-        zmk_hid_consumer_release(HID_USAGE_CONSUMER_VOLUME_DECREMENT);
-        zmk_endpoints_send_report(ZMK_HID_REPORT_TYPE_CONSUMER);
+    if (event->value != 0) {
+        uint32_t keycode = (event->value > 0) ? C_VOL_UP : C_VOL_DN;
+
+        ZMK_EVENT_RAISE(zmk_keycode_state_changed_create((struct zmk_keycode_state_changed){
+            .usage_page = USAGE_CONSUMER,
+            .keycode = keycode,
+            .state = true,
+            .timestamp = k_uptime_get(),
+        }));
+
+        ZMK_EVENT_RAISE(zmk_keycode_state_changed_create((struct zmk_keycode_state_changed){
+            .usage_page = USAGE_CONSUMER,
+            .keycode = keycode,
+            .state = false,
+            .timestamp = k_uptime_get(),
+        }));
     }
 
     return 1;
