@@ -44,7 +44,7 @@
         #input-processor-cells = <0>;
         type = <INPUT_EV_REL>;
         codes = <INPUT_REL_WHEEL>;
-        bindings = <&kp C_VOL_UP>, <&kp C_VOL_DN>;
+        bindings = <&kp C_VOL_UP &kp C_VOL_DN>;
     };
 
     /* LEFT pad -> scroll.
