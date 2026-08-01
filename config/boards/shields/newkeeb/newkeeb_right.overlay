@@ -4,6 +4,8 @@
  */
 
 #include "newkeeb_half.dtsi"
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <behaviors/input_gestures_accel.dtsi>
 
 /* Right half occupies columns 5-9 of the combined transform. */
 &default_transform {
@@ -26,10 +28,17 @@
         ;
 };
 
-/* Forward this half's pad to the pointer proxy (enable + bind the local pad). */
+/*
+ * Forward this half's pad to the pointer proxy, ACCELERATED HERE on the
+ * peripheral. Velocity acceleration needs accurate per-event timing; on the
+ * dongle the events arrive over BLE in bursts so the computed speed is garbage
+ * and the accel does nothing. Processing on the peripheral (where the pad is)
+ * fixes that. The dongle only maps/temp-layers the already-accelerated motion.
+ */
 &right_input {
     status = "okay";
     device = <&trackpad>;
+    input-processors = <&pointer_accel>;
 };
 
 /*
@@ -39,4 +48,20 @@
 &trackpad {
     swap-xy;
     invert-y;
+};
+
+/*
+ * Pointer acceleration curve (factors x1000):
+ *   speed 0 -> min-factor,  speed=threshold -> 1.0x,  speed>=speed-max -> max-factor
+ * min-factor < 1000 gives precise slow aiming; the ramp to max-factor is the feel.
+ * Speed is counts/sec; a Cirque tops ~2-3k cps, so speed-max sits in that range.
+ */
+&pointer_accel {
+    input-type = <INPUT_EV_REL>;
+    track-remainders;
+    min-factor = <700>;      /* 0.7x slow -> precise */
+    max-factor = <3500>;     /* 3.5x fast flicks */
+    speed-threshold = <500>;
+    speed-max = <2500>;
+    acceleration-exponent = <2>;
 };

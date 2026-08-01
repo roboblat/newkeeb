@@ -1,19 +1,18 @@
 /*
- * DONGLE = split CENTRAL, keyless, USB. Runs the keymap, the input processors,
- * and both trackpad listeners: LEFT pad -> scroll, RIGHT pad -> pointer.
- * No matrix, no trackpad, no battery - it's a bare XIAO on USB.
+ * DONGLE = split CENTRAL, keyless, USB. Runs the keymap and the trackpad
+ * listeners. No matrix, no trackpad, no battery - a bare XIAO on USB.
  *
- * Pointer accel = &pointer_accel on the right listener (curve tuned below).
- * Scroll accel  = &scroll_accel applied before the wheel mapper on the left.
- * The zmk-pointing-acceleration module builds now via the app/include path
- * added in config/CMakeLists.txt.
+ * NOTE: acceleration now runs on the PERIPHERALS (see newkeeb_left/right.overlay)
+ * where the pad's event timing is accurate. Velocity accel on the dongle got
+ * garbage timing from BLE-forwarded events and did nothing. The dongle only:
+ *   - LEFT:  maps the (already accelerated) motion to a wheel + scales it
+ *   - RIGHT: temp-layers the (already accelerated) pointer motion
  */
 
 #include "newkeeb-layouts.dtsi"
 #include "newkeeb.dtsi"
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <input/processors.dtsi>
-#include <behaviors/input_gestures_accel.dtsi>
 
 / {
     /* The central has no keys of its own -> mock kscan. */
@@ -39,60 +38,22 @@
         track-remainders;
     };
 
-    /* Second acceleration instance, for the LEFT (scroll) pad. The accel module
-     * only works on REL_X/REL_Y, never on the wheel - so we accelerate the raw
-     * finger motion FIRST, then map the (accelerated) motion to a wheel. That's
-     * how you get scroll acceleration. Same curve math as pointer_accel. */
-    scroll_accel: scroll_accel {
-        compatible = "zmk,input-processor-acceleration";
-        #input-processor-cells = <0>;
-        input-type = <INPUT_EV_REL>;
-        track-remainders;
-        min-factor = <1000>;   /* 1.0x at slow (don't slow scroll below normal) */
-        max-factor = <3000>;   /* 3.0x on fast flicks */
-        speed-threshold = <500>;
-        speed-max = <2500>;
-        acceleration-exponent = <2>;
-    };
-
-    /* LEFT pad -> scroll. accel on raw motion -> map to wheel -> scale. */
+    /* LEFT pad -> scroll. Motion arrives already accelerated from the peripheral;
+     * here we just map it to a wheel and scale it. */
     left_scroll_listener: left_scroll_listener {
         compatible = "zmk,input-listener";
         device = <&left_input>;
-        input-processors = <&scroll_accel &zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
+        input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
     };
 
-    /* RIGHT pad -> pointer with non-linear acceleration curve.
-     * zip_temp_layer 3 2000 = auto-activate the MOUSE layer (index 3 in the
-     * keymap) while the pad is in use, dropping it 2s after the last movement. */
+    /* RIGHT pad -> pointer. Motion arrives already accelerated from the peripheral.
+     * zip_temp_layer 3 2000 = auto-activate the MOUSE layer (index 3) while the pad
+     * is in use, dropping it 2s after the last movement. */
     right_pointer_listener: right_pointer_listener {
         compatible = "zmk,input-listener";
         device = <&right_input>;
-        input-processors = <&zip_temp_layer 3 2000 &pointer_accel>;
+        input-processors = <&zip_temp_layer 3 2000>;
     };
-};
-
-/*
- * Non-linear velocity acceleration for the Cirque pointer. Factors are x1000.
- * The module's real curve (speed is in counts/sec):
- *   speed 0            -> min-factor
- *   speed = threshold  -> 1.0x (1000)
- *   speed = speed-max  -> max-factor  (and stays there above)
- * So min-factor < 1000 is what gives you precise slow aiming, and the contrast
- * up to max-factor is the "acceleration" feel. A Cirque tops out ~2-3k cps, so
- * speed-max must sit in that range or you never reach max (the "no accel" bug),
- * and it must NOT be tiny or you pin at max instantly (the "just faster" bug).
- * Tune: min-factor lower = more precise slow; max-factor higher = faster flicks;
- * speed-threshold/speed-max move where the ramp starts/ends.
- */
-&pointer_accel {
-    input-type = <INPUT_EV_REL>;
-    track-remainders;
-    min-factor = <700>;      /* 0.7x slow -> precise aiming */
-    max-factor = <3500>;     /* 3.5x on fast flicks */
-    speed-threshold = <500>; /* 1.0x here */
-    speed-max = <2500>;      /* fast flicks land near here */
-    acceleration-exponent = <2>;
 };
 
 /* Enable both receive-side proxies on the central (device-less is fine here). */

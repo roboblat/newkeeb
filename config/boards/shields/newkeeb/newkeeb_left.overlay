@@ -4,6 +4,27 @@
  */
 
 #include "newkeeb_half.dtsi"
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/*
+ * Scroll acceleration, applied HERE on the peripheral (accurate local timing).
+ * The accel module only works on REL_X/REL_Y, so we accelerate the raw finger
+ * motion before forwarding; the dongle then maps that to a wheel. Fast swipe =
+ * faster scroll. Same curve math as the pointer.
+ */
+/ {
+    scroll_accel: scroll_accel {
+        compatible = "zmk,input-processor-acceleration";
+        #input-processor-cells = <0>;
+        input-type = <INPUT_EV_REL>;
+        track-remainders;
+        min-factor = <1000>;   /* 1.0x slow (don't slow scroll below normal) */
+        max-factor = <3000>;   /* 3.0x fast swipe */
+        speed-threshold = <500>;
+        speed-max = <2500>;
+        acceleration-exponent = <2>;
+    };
+};
 
 /*
  * Column order fix: the left half was wired with its columns in the opposite
@@ -20,10 +41,11 @@
         ;
 };
 
-/* Forward this half's pad to the scroll proxy (enable + bind the local pad). */
+/* Forward this half's pad to the scroll proxy, accelerated here first. */
 &left_input {
     status = "okay";
     device = <&trackpad>;
+    input-processors = <&scroll_accel>;
 };
 
 /*
