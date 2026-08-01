@@ -1,7 +1,7 @@
 description: Volume control input processor for mapping scroll wheel to system volume up/down
 compatible: "zmk,input-processor-volume"
 
-include: input-processor.yaml
+include: base.yaml
 
 properties:
   "#input-processor-cells":
