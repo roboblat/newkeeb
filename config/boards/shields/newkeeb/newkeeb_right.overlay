@@ -58,7 +58,6 @@
  */
 &pointer_accel {
     input-type = <INPUT_EV_REL>;
-    track-remainders;
     min-factor = <500>;       /* 0.5x slow -> micro-precision */
     max-factor = <5000>;      /* 5.0x fast flick -> strong acceleration surge */
     speed-threshold = <400>;  /* 400 counts/sec threshold */
