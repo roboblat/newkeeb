@@ -38,12 +38,27 @@
         track-remainders;
     };
 
-    /* LEFT pad -> scroll. Motion arrives already accelerated from the peripheral;
-     * here we just map it to a wheel and scale it. */
+    /* Converts relative scroll wheel movement to Volume Up / Down keypresses */
+    volume_behaviors: volume_behaviors {
+        compatible = "zmk,input-processor-behaviors";
+        #input-processor-cells = <0>;
+        type = <INPUT_EV_REL>;
+        codes = <INPUT_REL_WHEEL>;
+        bindings = <&kp C_VOL_UP>, <&kp C_VOL_DN>;
+    };
+
+    /* LEFT pad -> scroll.
+     * Base layer: mouse scroll wheel.
+     * NAV layer (layer 1): volume control (up/down swipe = Vol Up / Vol Down). */
     left_scroll_listener: left_scroll_listener {
         compatible = "zmk,input-listener";
         device = <&left_input>;
         input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
+
+        nav_volume {
+            layers = <1>; /* NAV layer */
+            input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 16 &volume_behaviors>;
+        };
     };
 
     /* RIGHT pad -> pointer. Motion arrives already accelerated from the peripheral.
