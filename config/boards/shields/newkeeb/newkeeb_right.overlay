@@ -59,9 +59,9 @@
 &pointer_accel {
     input-type = <INPUT_EV_REL>;
     track-remainders;
-    min-factor = <700>;      /* 0.7x slow -> precise */
-    max-factor = <3500>;     /* 3.5x fast flicks */
-    speed-threshold = <500>;
-    speed-max = <2500>;
+    min-factor = <600>;      /* 0.6x slow -> ultra-precise micro-aiming */
+    max-factor = <6000>;     /* 6.0x fast flicks -> aggressive velocity surge */
+    speed-threshold = <400>; /* 400 counts/sec threshold */
+    speed-max = <1800>;      /* Ramps to max acceleration earlier (at 1800 cps) */
     acceleration-exponent = <2>;
 };
