@@ -70,6 +70,11 @@
     };
 };
 
+/* Dongle has no local I2C trackpad; disable i2c1 to free peripheral 1 for spi1 WS2812B LED */
+&i2c1 {
+    status = "disabled";
+};
+
 &pinctrl {
     spi1_default: spi1_default {
         group1 {
