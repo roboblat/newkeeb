@@ -17,7 +17,6 @@
 #include "newkeeb.dtsi"
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <input/processors.dtsi>
-#include <behaviors/input_gestures_accel.dtsi>
 
 / {
     /* The central has no keys of its own -> mock kscan. */
@@ -33,18 +32,15 @@
         events = <0>;
     };
 
-    /* Mouse pointer acceleration processor for 40mm Cirque trackpads.
-     * Low speed = precise micro-movements (0.8x factor).
-     * High speed = fast flicks travel across full screen (3.5x factor). */
-    pointer_accel: pointer_accel {
-        compatible = "zmk,input-processor-accel";
-        #input-processor-cells = <0>;
+    /* Mouse pointer scaler: multiplies X and Y deltas so 1 inch of movement
+     * on the 40mm trackpad easily moves across the full screen!
+     * 1st arg = multiplier (numerator), 2nd arg = divisor (denominator).
+     * <&pointer_scaler 3 1> triples speed (3x multiplier). */
+    pointer_scaler: pointer_scaler {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
         type = <INPUT_EV_REL>;
-        min-factor = <800>;
-        max-factor = <3500>;
-        speed-threshold = <1200>;
-        speed-max = <6000>;
-        acceleration-exponent = <2>;
+        codes = <INPUT_REL_X INPUT_REL_Y>;
         track-remainders;
     };
 
@@ -65,11 +61,11 @@
         input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
     };
 
-    /* RIGHT pad -> pointer with acceleration. */
+    /* RIGHT pad -> pointer with 3x speed multiplier. */
     right_pointer_listener: right_pointer_listener {
         compatible = "zmk,input-listener";
         device = <&right_input>;
-        input-processors = <&pointer_accel>;
+        input-processors = <&pointer_scaler 3 1>;
     };
 };
 
