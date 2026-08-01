@@ -3,14 +3,10 @@
  * and both trackpad listeners: LEFT pad -> scroll, RIGHT pad -> pointer.
  * No matrix, no trackpad, no battery - it's a bare XIAO on USB.
  *
- * NOTE: pointer acceleration is temporarily disabled - the out-of-tree accel
- * module doesn't build against ZMK main yet (see config/west.yml). This is a
- * plain pointer. To re-add: restore the module in west.yml, then add:
- *     #include <behaviors/input_gestures_accel.dtsi>
- *     &pointer_accel { #input-processor-cells = <0>; input-type = <INPUT_EV_REL>;
- *         min-factor = <800>; max-factor = <3000>; speed-threshold = <1200>;
- *         speed-max = <6000>; acceleration-exponent = <2>; track-remainders; };
- * and set  input-processors = <&pointer_accel>;  on right_pointer_listener.
+ * Pointer accel = &pointer_accel on the right listener (curve tuned below).
+ * Scroll accel  = &scroll_accel applied before the wheel mapper on the left.
+ * The zmk-pointing-acceleration module builds now via the app/include path
+ * added in config/CMakeLists.txt.
  */
 
 #include "newkeeb-layouts.dtsi"
@@ -43,11 +39,27 @@
         track-remainders;
     };
 
-    /* LEFT pad -> scroll. */
+    /* Second acceleration instance, for the LEFT (scroll) pad. The accel module
+     * only works on REL_X/REL_Y, never on the wheel - so we accelerate the raw
+     * finger motion FIRST, then map the (accelerated) motion to a wheel. That's
+     * how you get scroll acceleration. Same curve math as pointer_accel. */
+    scroll_accel: scroll_accel {
+        compatible = "zmk,input-processor-acceleration";
+        #input-processor-cells = <0>;
+        input-type = <INPUT_EV_REL>;
+        track-remainders;
+        min-factor = <1000>;   /* 1.0x at slow (don't slow scroll below normal) */
+        max-factor = <3000>;   /* 3.0x on fast flicks */
+        speed-threshold = <500>;
+        speed-max = <2500>;
+        acceleration-exponent = <2>;
+    };
+
+    /* LEFT pad -> scroll. accel on raw motion -> map to wheel -> scale. */
     left_scroll_listener: left_scroll_listener {
         compatible = "zmk,input-listener";
         device = <&left_input>;
-        input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
+        input-processors = <&scroll_accel &zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
     };
 
     /* RIGHT pad -> pointer with non-linear acceleration curve.
@@ -61,23 +73,25 @@
 };
 
 /*
- * Non-linear velocity acceleration for the Cirque pointer. Factors are x1000
- * (1000 = 1.0x). Tuning knobs:
- *   min-factor        - gain at/below speed-threshold (1000 = normal, not slower)
- *   max-factor        - gain at/above speed-max (3000 = 3.0x on fast flicks)
- *   speed-threshold   - velocity where accel starts ramping (lower = engages sooner)
- *   speed-max         - velocity where max-factor is reached (lower = ramps faster)
- *   acceleration-exponent - 1 linear, 2 quadratic ramp
- * These engage the ramp much earlier than the module defaults (which top out so
- * high you never feel them). Raise the thresholds if it feels twitchy.
+ * Non-linear velocity acceleration for the Cirque pointer. Factors are x1000.
+ * The module's real curve (speed is in counts/sec):
+ *   speed 0            -> min-factor
+ *   speed = threshold  -> 1.0x (1000)
+ *   speed = speed-max  -> max-factor  (and stays there above)
+ * So min-factor < 1000 is what gives you precise slow aiming, and the contrast
+ * up to max-factor is the "acceleration" feel. A Cirque tops out ~2-3k cps, so
+ * speed-max must sit in that range or you never reach max (the "no accel" bug),
+ * and it must NOT be tiny or you pin at max instantly (the "just faster" bug).
+ * Tune: min-factor lower = more precise slow; max-factor higher = faster flicks;
+ * speed-threshold/speed-max move where the ramp starts/ends.
  */
 &pointer_accel {
     input-type = <INPUT_EV_REL>;
     track-remainders;
-    min-factor = <1000>;
-    max-factor = <3000>;
-    speed-threshold = <300>;
-    speed-max = <2000>;
+    min-factor = <700>;      /* 0.7x slow -> precise aiming */
+    max-factor = <3500>;     /* 3.5x on fast flicks */
+    speed-threshold = <500>; /* 1.0x here */
+    speed-max = <2500>;      /* fast flicks land near here */
     acceleration-exponent = <2>;
 };
 

@@ -52,11 +52,11 @@
         };
 
         /*
-         * MOUSE layer - auto-activated while you use the right trackpad (via
-         * &zip_temp_layer in newkeeb_dongle.overlay). Left thumbs become mouse
-         * clicks so the right hand stays on the pad. Everything else is
-         * transparent, so normal keys still work during the ~2s window.
-         * Tweak these bindings live in ZMK Studio.
+         * MOUSE layer - passthrough, like the old ergo build. Auto-activated by
+         * the right trackpad (&zip_temp_layer in newkeeb_dongle.overlay), so the
+         * dongle screen shows "Mouse" while the pad is in use and every key still
+         * passes through to the base layer. Put click bindings here (or on base)
+         * whenever you want them; edit live in ZMK Studio.
          */
         mouse_layer {
             display-name = "Mouse";
@@ -64,7 +64,7 @@
    &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
    &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
    &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
-   &trans     &trans   &mkp MCLK &mkp RCLK &mkp LCLK    &trans   &trans   &trans    &trans   &trans
+   &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
             >;
         };
     };
