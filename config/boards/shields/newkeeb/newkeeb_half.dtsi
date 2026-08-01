@@ -100,7 +100,7 @@
         status = "okay";
         data-ready-gpios = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;   /* DR  D10 P1.15 */
         sleep-mode-enable;          /* ~1.7 mA -> ~40 uA idle. Keep for battery life. */
-        sensitivity = "4x";
+        sensitivity = "2x";
         data-mode = "relative";     /* REL_X/REL_Y feeds the pointer + scroll mapper */
 
         /*
