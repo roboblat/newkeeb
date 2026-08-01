@@ -50,11 +50,13 @@
         input-processors = <&zip_xy_to_scroll_mapper &scroll_scaler 1 8>;
     };
 
-    /* RIGHT pad -> pointer with non-linear acceleration curve. */
+    /* RIGHT pad -> pointer with non-linear acceleration curve.
+     * zip_temp_layer 3 2000 = auto-activate the MOUSE layer (index 3 in the
+     * keymap) while the pad is in use, dropping it 2s after the last movement. */
     right_pointer_listener: right_pointer_listener {
         compatible = "zmk,input-listener";
         device = <&right_input>;
-        input-processors = <&pointer_accel>;
+        input-processors = <&zip_temp_layer 3 2000 &pointer_accel>;
     };
 };
 

@@ -9,10 +9,12 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/pointing.h>
 
-#define BASE 0
-#define NAV  1
-#define SYM  2
+#define BASE  0
+#define NAV   1
+#define SYM   2
+#define MOUSE 3
 
 / {
     keymap {
@@ -46,6 +48,23 @@
    &kp F1     &kp F2   &kp F3   &kp F4   &kp F5         &kp MINUS &kp EQUAL &kp LBKT &kp RBKT &kp BSLH
    &kp F6     &kp F7   &kp F8   &kp F9   &kp F10        &bt BT_CLR &kp F11 &kp F12  &studio_unlock &trans
    &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
+            >;
+        };
+
+        /*
+         * MOUSE layer - auto-activated while you use the right trackpad (via
+         * &zip_temp_layer in newkeeb_dongle.overlay). Left thumbs become mouse
+         * clicks so the right hand stays on the pad. Everything else is
+         * transparent, so normal keys still work during the ~2s window.
+         * Tweak these bindings live in ZMK Studio.
+         */
+        mouse_layer {
+            display-name = "Mouse";
+            bindings = <
+   &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
+   &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
+   &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
+   &trans     &trans   &mkp MCLK &mkp RCLK &mkp LCLK    &trans   &trans   &trans    &trans   &trans
             >;
         };
     };
