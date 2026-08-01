@@ -59,9 +59,9 @@
 &pointer_accel {
     input-type = <INPUT_EV_REL>;
     track-remainders;
-    min-factor = <600>;      /* 0.6x slow -> ultra-precise micro-aiming */
-    max-factor = <6000>;     /* 6.0x fast flicks -> aggressive velocity surge */
-    speed-threshold = <400>; /* 400 counts/sec threshold */
-    speed-max = <1800>;      /* Ramps to max acceleration earlier (at 1800 cps) */
-    acceleration-exponent = <2>;
+    min-factor = <400>;       /* 0.4x slow -> extreme micro-precision for 1px UI targets */
+    max-factor = <10000>;     /* 10.0x fast flick -> massive travel across full screen */
+    speed-threshold = <300>;  /* 300 counts/sec onset */
+    speed-max = <1400>;       /* Reaches max acceleration early during hand flicks */
+    acceleration-exponent = <3>; /* Cubic curve for exponential speed surge */
 };
