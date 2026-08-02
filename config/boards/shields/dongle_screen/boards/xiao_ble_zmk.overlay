@@ -65,8 +65,10 @@ disp_spi: &spi3 {
            mipi-mode = "MIPI_DBI_MODE_SPI_4WIRE";
            reg = <0>;
            /* Native-landscape config: the 240x280 portrait panel is driven as
-            * a 280x240 landscape display. mdac 0xa0 (MY|MV) swaps the X/Y axes
-            * in hardware; the panel's 20px window offset moves to the X axis. */
+            * a 280x240 landscape display. mdac 0x60 (MX|MV) = the ROTATED_270
+            * orientation the old zmk-config-gemini build uses for this exact
+            * panel (its proven, non-clipping landscape). The 20px window offset
+            * moves to the X axis. */
            width = <280>;
            height = <240>;
            x-offset = <20>;
@@ -75,7 +77,7 @@ disp_spi: &spi3 {
            gctrl = <0x35>;
            vrhs = <0x12>;
            vdvs = <0x20>;
-           mdac = <0xa0>;
+           mdac = <0x60>;
            gamma = <0x01>;
            colmod = <0x05>;
            lcm = <0x2c>;
