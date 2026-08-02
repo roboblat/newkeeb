@@ -511,17 +511,9 @@ static int st7789v_lcd_init(const struct device *dev)
 	ret = st7789v_transmit(dev, ST7789V_CMD_RGBCTRL,
 						   (uint8_t *)config->rgb_param,
 						   sizeof(config->rgb_param));
-	if (ret < 0)
-	{
-		return ret;
-	}
-
-	/* Apply the configured orientation here, during device init (POST_KERNEL),
-	 * so get_capabilities() reports the rotated resolution BEFORE LVGL/ZMK set
-	 * up the display at APPLICATION level. Doing it later (via a SYS_INIT) is too
-	 * late - the canvas is already sized for the un-rotated panel, which is why
-	 * toggling the orientation Kconfigs appeared to have no effect. */
-	return st7789v_set_orientation(dev, data->orientation);
+	/* Panel stays in its native NORMAL orientation; rotation is done in software
+	 * by LVGL (see the dongle_screen custom_status_screen.c). */
+	return ret;
 }
 
 static int st7789v_init(const struct device *dev)
@@ -647,7 +639,7 @@ static DEVICE_API(display, st7789v_api) = {
 	static struct st7789v_data st7789v_data_##inst = {                                              \
 		.x_offset = DT_INST_PROP(inst, x_offset),                                                   \
 		.y_offset = DT_INST_PROP(inst, y_offset),                                                   \
-		.orientation = ST7789V_INIT_ORIENTATION,                                                    \
+		.orientation = DISPLAY_ORIENTATION_NORMAL,                                                  \
 	};                                                                                              \
                                                                                                     \
 	PM_DEVICE_DT_INST_DEFINE(inst, st7789v_pm_action);                                              \

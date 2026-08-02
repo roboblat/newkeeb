@@ -45,6 +45,12 @@ lv_obj_t *zmk_display_status_screen()
 {
     lv_obj_t *screen;
 
+    /* Rotate the whole UI 90 in software (LVGL), independent of the panel's
+     * MADCTL. Hardware orientation had no visible effect on this display, so we
+     * keep the panel in its native portrait mode and let LVGL rotate the render.
+     * Switch to LV_DISP_ROTATION_270 for the opposite 90 direction. */
+    lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROTATION_90);
+
     screen = lv_obj_create(NULL);
     /* Main panel background = deep plum (#3F0071), matches the cat. */
     lv_obj_set_style_bg_color(screen, lv_color_hex(0x3F0071), LV_PART_MAIN);

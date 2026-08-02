@@ -3,34 +3,15 @@
 #include <zephyr/drivers/display.h>
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+
+/*
+ * Rotation is now handled in software by LVGL (see custom_status_screen.c), not
+ * by the panel's MADCTL. Hardware display_set_orientation() had no visible effect
+ * on this display, so this init is intentionally a no-op. The panel is left in its
+ * native NORMAL orientation so it does not compound with the LVGL rotation.
+ */
 int disp_set_orientation(void)
 {
-	// Set the orientation
-	const struct device *display = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
-	if (!device_is_ready(display))
-	{
-		return -EIO;
-	}
-
-#ifdef CONFIG_DONGLE_SCREEN_HORIZONTAL
-#ifdef CONFIG_DONGLE_SCREEN_FLIPPED
-	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_ROTATED_90);
-#else
-	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_ROTATED_270);
-#endif
-#else
-#ifdef CONFIG_DONGLE_SCREEN_FLIPPED
-	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_NORMAL);
-#else
-	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_ROTATED_180);
-#endif
-#endif
-
-	if (ret < 0)
-	{
-		return ret;
-	}
-
 	return 0;
 }
 
