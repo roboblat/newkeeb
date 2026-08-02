@@ -13,11 +13,7 @@ int disp_set_orientation(void)
 	}
 
 #ifdef CONFIG_DONGLE_SCREEN_HORIZONTAL
-#ifdef CONFIG_DONGLE_SCREEN_FLIPPED
-	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_ROTATED_90);
-#else
 	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_ROTATED_270);
-#endif
 #else
 #ifdef CONFIG_DONGLE_SCREEN_FLIPPED
 	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_NORMAL);
