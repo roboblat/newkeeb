@@ -36,6 +36,10 @@ config ZMK_SPLIT_ROLE_CENTRAL
 config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
 	default 2
 
+imply ZMK_RGB_UNDERGLOW
+imply LED_STRIP
+imply WS2812_STRIP_SPI
+
 endif # SHIELD_NEWKEEB_DONGLE
 
 # Diagnostic-only: standalone single half. NOT split, so USB HID is active.
