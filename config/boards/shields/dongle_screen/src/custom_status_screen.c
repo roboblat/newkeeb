@@ -46,7 +46,7 @@ lv_obj_t *zmk_display_status_screen()
     lv_obj_t *screen;
 
 #if CONFIG_DONGLE_SCREEN_FLIPPED
-    lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_180);
+    lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROTATION_180);
 #endif
 
     screen = lv_obj_create(NULL);
