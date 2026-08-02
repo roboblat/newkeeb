@@ -31,14 +31,13 @@ config ZMK_SPLIT
 # The dongle is the central.
 config ZMK_SPLIT_ROLE_CENTRAL
 	default y
+	imply ZMK_RGB_UNDERGLOW
+	imply LED_STRIP
+	imply WS2812_STRIP_SPI
 
 # Two peripherals connect to it: the left and right halves.
 config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
 	default 2
-
-imply ZMK_RGB_UNDERGLOW
-imply LED_STRIP
-imply WS2812_STRIP_SPI
 
 endif # SHIELD_NEWKEEB_DONGLE
 
