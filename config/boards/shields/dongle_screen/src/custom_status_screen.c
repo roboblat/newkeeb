@@ -45,10 +45,6 @@ lv_obj_t *zmk_display_status_screen()
 {
     lv_obj_t *screen;
 
-#if CONFIG_DONGLE_SCREEN_FLIPPED
-    lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROTATION_180);
-#endif
-
     screen = lv_obj_create(NULL);
     /* Main panel background = deep plum (#3F0071), matches the cat. */
     lv_obj_set_style_bg_color(screen, lv_color_hex(0x3F0071), LV_PART_MAIN);
