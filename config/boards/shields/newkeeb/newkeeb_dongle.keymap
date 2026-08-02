@@ -10,7 +10,6 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/pointing.h>
-#include <dt-bindings/zmk/rgb.h>
 
 #define BASE  0
 #define NAV   1
@@ -47,7 +46,7 @@
             bindings = <
    &kp EXCL   &kp AT   &kp HASH &kp DLLR &kp PRCNT      &kp CARET &kp AMPS &kp STAR &kp LPAR &kp RPAR
    &kp F1     &kp F2   &kp F3   &kp F4   &kp F5         &kp MINUS &kp EQUAL &kp LBKT &kp RBKT &kp BSLH
-   &kp F6     &kp F7   &kp F8   &kp F9   &kp F10        &bt BT_CLR &rgb_ug RGB_TOG &rgb_ug RGB_EFF &studio_unlock &trans
+   &kp F6     &kp F7   &kp F8   &kp F9   &kp F10        &bt BT_CLR &trans   &trans   &studio_unlock &trans
    &trans     &trans   &trans   &trans   &trans         &trans   &trans   &trans    &trans   &trans
             >;
         };

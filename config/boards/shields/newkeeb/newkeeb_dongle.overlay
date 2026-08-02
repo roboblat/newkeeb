@@ -13,14 +13,11 @@
 #include "newkeeb.dtsi"
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <input/processors.dtsi>
-#include <dt-bindings/led/led.h>
-
 / {
     /* The central has no keys of its own -> mock kscan. */
     chosen {
         zmk,kscan = &mock_kscan;
         zmk,physical-layout = &newkeeb_physical_layout;
-        zmk,underglow = &led_strip;
     };
 
     mock_kscan: mock_kscan_0 {
@@ -30,40 +27,6 @@
         events = <0>;
     };
 
-};
-
-&pinctrl {
-    spi2_default: spi2_default {
-        group1 {
-            psels = <NRF_PSEL(SPIM_MOSI, 0, 3)>; /* D1 = P0.03 */
-        };
-    };
-
-    spi2_sleep: spi2_sleep {
-        group1 {
-            psels = <NRF_PSEL(SPIM_MOSI, 0, 3)>;
-            low-power-enable;
-        };
-    };
-};
-
-&spi2 {
-    compatible = "nordic,nrf-spim";
-    status = "okay";
-    pinctrl-0 = <&spi2_default>;
-    pinctrl-1 = <&spi2_sleep>;
-    pinctrl-names = "default", "sleep";
-
-    led_strip: ws2812@0 {
-        compatible = "worldsemi,ws2812-spi";
-        reg = <0>;
-        spi-max-frequency = <4000000>;
-        frame-format = <0>;
-        chain-length = <10>;
-        spi-one-frame = <0x70>;
-        spi-zero-frame = <0x40>;
-        color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
-    };
 };
 
 / {
