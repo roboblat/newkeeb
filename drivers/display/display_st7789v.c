@@ -318,7 +318,7 @@ static int st7789v_set_orientation(const struct device *dev,
 	case DISPLAY_ORIENTATION_ROTATED_90:
 		tx_data |= (ST7789V_MADCTL_MY_BOTTOM_TO_TOP | ST7789V_MADCTL_MV_REVERSE_MODE);
 		x_offset = 0;
-		y_offset = 0;
+		y_offset = data->y_offset;
 		break;
 
 	case DISPLAY_ORIENTATION_ROTATED_180:
