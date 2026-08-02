@@ -317,8 +317,11 @@ static int st7789v_set_orientation(const struct device *dev,
 
 	case DISPLAY_ORIENTATION_ROTATED_90:
 		tx_data |= (ST7789V_MADCTL_MY_BOTTOM_TO_TOP | ST7789V_MADCTL_MV_REVERSE_MODE);
-		x_offset = 0;
-		y_offset = data->y_offset;
+		/* MV swaps X/Y, so the panel's window offset moves to the other axis
+		 * (same as the ROTATED_270 case below). Previously this left the offset
+		 * on Y, shifting/clipping the image in the 90 direction. */
+		x_offset = data->y_offset;
+		y_offset = data->x_offset;
 		break;
 
 	case DISPLAY_ORIENTATION_ROTATED_180:
@@ -508,7 +511,17 @@ static int st7789v_lcd_init(const struct device *dev)
 	ret = st7789v_transmit(dev, ST7789V_CMD_RGBCTRL,
 						   (uint8_t *)config->rgb_param,
 						   sizeof(config->rgb_param));
-	return ret;
+	if (ret < 0)
+	{
+		return ret;
+	}
+
+	/* Apply the configured orientation here, during device init (POST_KERNEL),
+	 * so get_capabilities() reports the rotated resolution BEFORE LVGL/ZMK set
+	 * up the display at APPLICATION level. Doing it later (via a SYS_INIT) is too
+	 * late - the canvas is already sized for the un-rotated panel, which is why
+	 * toggling the orientation Kconfigs appeared to have no effect. */
+	return st7789v_set_orientation(dev, data->orientation);
 }
 
 static int st7789v_init(const struct device *dev)
@@ -587,6 +600,19 @@ static DEVICE_API(display, st7789v_api) = {
 	.set_orientation = st7789v_set_orientation,
 };
 
+/* Initial orientation, resolved from the dongle-screen Kconfigs. Must match the
+ * mapping in the dongle_screen shield's screen_rotate_init.c. Applied at init so
+ * the reported resolution is correct before LVGL is created. */
+#if defined(CONFIG_DONGLE_SCREEN_HORIZONTAL) && defined(CONFIG_DONGLE_SCREEN_FLIPPED)
+#define ST7789V_INIT_ORIENTATION DISPLAY_ORIENTATION_ROTATED_90
+#elif defined(CONFIG_DONGLE_SCREEN_HORIZONTAL)
+#define ST7789V_INIT_ORIENTATION DISPLAY_ORIENTATION_ROTATED_270
+#elif defined(CONFIG_DONGLE_SCREEN_FLIPPED)
+#define ST7789V_INIT_ORIENTATION DISPLAY_ORIENTATION_NORMAL
+#else
+#define ST7789V_INIT_ORIENTATION DISPLAY_ORIENTATION_ROTATED_180
+#endif
+
 #define ST7789V_WORD_SIZE(inst) \
 	((DT_INST_STRING_UPPER_TOKEN(inst, mipi_mode) == MIPI_DBI_MODE_SPI_4WIRE) ? SPI_WORD_SET(8) : SPI_WORD_SET(9))
 #define ST7789V_INIT(inst)                                                                          \
@@ -621,7 +647,7 @@ static DEVICE_API(display, st7789v_api) = {
 	static struct st7789v_data st7789v_data_##inst = {                                              \
 		.x_offset = DT_INST_PROP(inst, x_offset),                                                   \
 		.y_offset = DT_INST_PROP(inst, y_offset),                                                   \
-		.orientation = DISPLAY_ORIENTATION_NORMAL,                                                  \
+		.orientation = ST7789V_INIT_ORIENTATION,                                                    \
 	};                                                                                              \
                                                                                                     \
 	PM_DEVICE_DT_INST_DEFINE(inst, st7789v_pm_action);                                              \
