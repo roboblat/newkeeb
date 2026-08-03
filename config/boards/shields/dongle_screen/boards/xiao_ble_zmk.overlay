@@ -65,18 +65,19 @@ disp_spi: &spi3 {
            mipi-mode = "MIPI_DBI_MODE_SPI_4WIRE";
            reg = <0>;
            /* Panel is a 1.14" ST7789V, 135x240 native (TTGO T-Display style),
-            * driven here as a 240x135 landscape display. mdac 0xa0 (MY|MV) is
-            * the confirmed-correct rotation direction; x/y offsets are the
-            * standard 135x240 landscape window offsets (col 40, row 53). */
+            * driven here as a 240x135 landscape display. mdac 0x60 (MX|MV) is
+            * the 180-flipped landscape (screen was physically remounted upside
+            * down); x/y offsets are the standard 135x240 landscape window
+            * offsets (col 40, row 52). Use 0xa0 for the other 180 direction. */
            width = <240>;
            height = <135>;
            x-offset = <40>;
-           y-offset = <53>;
+           y-offset = <52>;
            vcom = <0x19>;
            gctrl = <0x35>;
            vrhs = <0x12>;
            vdvs = <0x20>;
-           mdac = <0xa0>;
+           mdac = <0x60>;
            gamma = <0x01>;
            colmod = <0x05>;
            lcm = <0x2c>;
