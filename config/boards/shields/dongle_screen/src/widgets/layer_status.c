@@ -43,7 +43,13 @@ static void set_text_all(struct zmk_widget_layer_status *widget, const char *tex
 static void set_layer_symbol(struct zmk_widget_layer_status *widget, struct layer_status_state state)
 {
     char text[13] = {};
-    if (state.label == NULL)
+    if (state.index == 0)
+    {
+        /* Base layer: show nothing so the screen stays clean (bongo cat +
+         * output + battery). The label only appears on momentary/other layers. */
+        text[0] = '\0';
+    }
+    else if (state.label == NULL)
     {
         snprintf(text, sizeof(text), "%i", state.index);
     }
