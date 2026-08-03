@@ -68,11 +68,13 @@ disp_spi: &spi3 {
             * driven here as a 240x135 landscape display. mdac 0x60 (MX|MV) is
             * the 180-flipped landscape (screen was physically remounted upside
             * down); x/y offsets are the standard 135x240 landscape window
-            * offsets (col 40, row 52). Use 0xa0 for the other 180 direction. */
+            * offsets (col 40, row 53). row=53 aligns the window to the glass so
+            * the bottom edge isn't a strip of uninitialized GRAM (static). Use
+            * 0xa0 for the other 180 direction. */
            width = <240>;
            height = <135>;
            x-offset = <40>;
-           y-offset = <52>;
+           y-offset = <53>;
            vcom = <0x19>;
            gctrl = <0x35>;
            vrhs = <0x12>;
